@@ -1,0 +1,162 @@
+ #include <stdio.h>
+#include <stdlib.h>
+
+typedef struct TreeNode {
+    int data;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+
+// Function to create a new node
+TreeNode* CreateNode(int data) {
+    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Function to place a node in the tree
+void PlaceNode(TreeNode *parent, int direction, int data) {
+    TreeNode *newNode = CreateNode(data);
+    if (direction == 0) { // Place left
+        parent->left = newNode;
+    } else { // Place right
+        parent->right = newNode;
+    }
+}
+
+// Function to generate a binary tree
+void GenerateLinkTree(TreeNode *root) {
+    // Manually creating a tree to match the expected output
+    PlaceNode(root, 0, 20);  // root.left = 20
+    PlaceNode(root, 1, 30);  // root.right = 30
+    PlaceNode(root->left, 0, 5);  // 20.left = 5
+    PlaceNode(root->left, 1, 15); // 20.right = 15
+    PlaceNode(root->right, 0, 6); // 30.left = 6
+    PlaceNode(root->right, 1, 4); // 30.right = 4
+
+    // Adding leaf nodes
+    PlaceNode(root->left->left, 0, 1);   // 5.left = 1
+    PlaceNode(root->left->left, 1, 2);   // 5.right = 2
+    PlaceNode(root->left->right, 0, 3);  // 15.left = 3
+    PlaceNode(root->left->right, 1, 0);  // 15.right = 0
+    PlaceNode(root->right->left, 0, 1);  // 6.left = 1
+    PlaceNode(root->right->left, 1, 1);  // 6.right = 1
+    PlaceNode(root->right->right, 0, 1); // 4.left = 1
+    PlaceNode(root->right->right, 1, 1); // 4.right = 1
+}
+
+// Function to calculate the sum of all nodes iteratively
+int GetSumOfNodes(TreeNode *root) {
+    if (!root) return 0;
+
+    int sum = 0;
+    TreeNode *stack[100];
+    int top = -1;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        TreeNode *node = stack[top--];
+        sum += node->data;
+
+        if (node->right) stack[++top] = node->right;
+        if (node->left) stack[++top] = node->left;
+    }
+
+    return sum;
+}
+
+// Function to count the number of nodes iteratively
+int GetNumberOfNodes(TreeNode *root) {
+    if (!root) return 0;
+
+    int count = 0;
+    TreeNode *stack[100];
+    int top = -1;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        TreeNode *node = stack[top--];
+        count++;
+
+        if (node->right) stack[++top] = node->right;
+        if (node->left) stack[++top] = node->left;
+    }
+
+    return count;
+}
+
+// Function to calculate the height of the tree iteratively
+int GetHeightOfTree(TreeNode *root) {
+    if (!root) return 0;
+
+    int height = 0;
+    TreeNode *stack[100];
+    int level[100];
+    int top = -1;
+    stack[++top] = root;
+    level[top] = 1;
+
+    while (top >= 0) {
+        TreeNode *node = stack[top--];
+        int currentLevel = level[top + 1];
+
+        if (node->left) {
+            stack[++top] = node->left;
+            level[top] = currentLevel + 1;
+        }
+        if (node->right) {
+            stack[++top] = node->right;
+            level[top] = currentLevel + 1;
+        }
+
+        height = currentLevel > height ? currentLevel : height;
+    }
+
+    return height;
+}
+
+// Function to count the number of leaf nodes iteratively
+int GetNumberOfLeafNodes(TreeNode *root) {
+    if (!root) return 0;
+
+    int leafCount = 0;
+    TreeNode *stack[100];
+    int top = -1;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        TreeNode *node = stack[top--];
+
+        if (!node->left && !node->right) {
+            leafCount++;
+        }
+
+        if (node->right) stack[++top] = node->right;
+        if (node->left) stack[++top] = node->left;
+    }
+
+    return leafCount;
+}
+
+int main() {
+    TreeNode *root = CreateNode(1); // Create root node with data = 1
+
+    // Generate the tree
+    GenerateLinkTree(root);
+
+    // Get the required values
+    int sum = GetSumOfNodes(root);
+    int numNodes = GetNumberOfNodes(root);
+    int height = GetHeightOfTree(root);
+    int numLeafNodes = GetNumberOfLeafNodes(root);
+
+    // Print the results
+    printf("Sum of nodes: %d\n", sum);
+    printf("Number of nodes: %d\n", numNodes);
+    printf("Height of Tree: %d\n", height);
+    printf("Number of leaf nodes: %d\n", numLeafNodes);
+
+    return 0;
+}
